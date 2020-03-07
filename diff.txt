@@ -1,0 +1,74 @@
+Problems in the below code ...............................................
+
+import React from 'react'
+
+class SomeListComponent extends React.Component {
+  constructor (props) {
+    this.state = { items: props.items }
+  }
+
+  shouldComponentUpdate (nextProps) {
+    return nextProps.items !== this.props.items
+  }
+
+  handleClick (index) {
+    this.props.onClick(index)
+  }
+
+  renderElement (item, index) {
+    return <li onClick={() => this.handleClick(index)}>{item.text}</li>
+  }
+
+  render () {
+    return (
+      <ul style={{ backgroundColor: 'red', height: 100 }}>
+        {this.state.items.map((item, i) => this.renderElement(item, i))}
+      </ul>
+    )
+  }
+}
+
+export default SomeListComponent
+............................................................................
+
+1) We always have to use super() when defining a constructor.
+2) The li element should have a key attribute, this helps react to keep track of these elements.
+3) {this.state.items.map((item, i) => this.renderElement(item, i))} this code won't update the list
+    if the user adds something new.
+
+............................................................................
+
+Refactoring the component...................................................
+
+import React from 'react'
+
+class List extends React.Component {
+  constructor (props) {
+    super(props);                               //1) Use of super() for passing props to the parent constructor
+    this.state = { items: props.items }
+  }
+
+  shouldComponentUpdate (nextProps) {
+    // console.log(nextProps.items !== this.props.items);
+    return nextProps.items !== this.props.items
+  }
+
+  handleClick (index) {
+    this.props.onClick(index)
+  }
+
+  renderElement (item, index) {
+    return <li onClick={() => this.handleClick(index)} key={index}>{item.text}</li>    //2) defining key attribute for each li element
+  }
+
+  render () {
+    return (
+      <ul style={{ backgroundColor: 'red', height: 'auto' }}>
+        {/* 3) using this.props.item instead of this.state.item*/}
+        {this.props.items.map((item, i) => this.renderElement(item, i))}  
+      </ul>
+    )
+  }
+}
+
+export default List
